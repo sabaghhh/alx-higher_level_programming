@@ -2,13 +2,19 @@
 
 const request = require('request');
 
-request(process.argv[2], function (error, response, body) {
-  if (!error) {
-    const results = JSON.parse(body).results;
-    console.log(results.reduce((count, movie) => {
-      return movie.characters.find((character) => character.endsWith('/18/'))
-        ? count + 1
-        : count;
-    }, 0));
+const url = process.argv[2];
+const characterId = 18;
+
+request(url, function (err, response, body) {
+  if (!err) {
+    const { results } = JSON.parse(body);
+
+    // Using reduce to count movies with characterId 18
+    const count = results.reduce((count, film) => {
+      const hasCharacterWithId18 = film.characters.find((character) => character.endsWith(`/api/people/${characterId}/`));
+      return hasCharacterWithId18 ? count + 1 : count;
+    }, 0);
+
+    console.log(count);
   }
 });
